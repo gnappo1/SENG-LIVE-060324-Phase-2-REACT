@@ -3,6 +3,7 @@ import { useState } from "react";
 
 const Header = () => {
   const [darkModeOn, setDarkModeOn] = useState(false);
+  const toggleDarkMode = (e) => setDarkModeOn(currentValueForDarkMode => !currentValueForDarkMode)
 
   return (
     <header className={darkModeOn ? "App" : "App light"}>
@@ -10,7 +11,7 @@ const Header = () => {
         <span className="logo">{"//"}</span>
         Project Showcase
       </h1>
-      <button onClick={(e) => setDarkModeOn(currentValueForDarkMode => !currentValueForDarkMode)}>{darkModeOn ? "Light" : "Dark"} Mode</button>
+      <button onClick={toggleDarkMode}>{darkModeOn ? "Light" : "Dark"} Mode</button>
     </header>
   );
 }
