@@ -6,7 +6,7 @@ import projects from "./projects";
 
 const App = () => {
   return (
-    <div className="App">
+    <div>
       <Header />
       <ProjectForm />
       <ProjectList projects={projects} />

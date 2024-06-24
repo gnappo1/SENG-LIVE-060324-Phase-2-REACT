@@ -1,4 +1,5 @@
-const ProjectListItem = ({ id, about, image, link, name, phase }) => {
+const ProjectListItem = ({ id, about, image, link, name, phase  }) => {
+
   return (
     <li className="card">
       <figure className="image">

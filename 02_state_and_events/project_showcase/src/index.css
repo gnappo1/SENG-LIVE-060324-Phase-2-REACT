@@ -35,7 +35,7 @@ body {
 .App {
   color: var(--color);
   background-color: var(--background);
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 .App.light {
