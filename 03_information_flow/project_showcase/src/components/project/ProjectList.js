@@ -1,20 +1,8 @@
 import { useState } from 'react';
 import ProjectListItem from "./ProjectListItem";
 
-const ProjectList = () => {
+const ProjectList = ({searchQuery, phaseSelected}) => {
   const [projects, setProjects] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("")
-  const [phaseSelected, setPhaseSelected] = useState("All");
-
-  
-  const handlePhaseSelection = (e) => {
-    if (e.target.textContent === "All") {
-      setPhaseSelected("All")
-    } else {
-      const phase = e.target.textContent.replace("Phase ", "")
-      setPhaseSelected(Number(phase))
-    }
-  }
   
   const handleClick = () => {
     loadProjects();
@@ -23,23 +11,20 @@ const ProjectList = () => {
   const loadProjects = () => {
     fetch("http://localhost:4000/projects")
     .then((res) => res.json())
-    .then((projects) => setProjects(projects));
+    .then((projects) => setProjects(projects))
+    .catch(err => console.log(err))
   }
-  
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value)
-  }
-  
+
   const filteredProjects = projects.filter(project => {
     return phaseSelected === "All" || project.phase === phaseSelected
   })
-
-  const searchResults = filteredProjects.filter(project => {
-    return searchQuery === "" || project.name.toLowerCase().includes(searchQuery.toLowerCase())
+  
+  const searchFiltered = filteredProjects.filter(project => {
+    return searchQuery === "" || project.name.toLowerCase().includes(searchQuery.toLowerCase()) || project.about.toLowerCase().includes(searchQuery.toLowerCase())
   })
   
   const renderProjects = () => {
-    return searchResults.map(project => (
+    return searchFiltered.map(project => (
       <ProjectListItem
       key={project.id}
       {...project}
@@ -52,21 +37,7 @@ const ProjectList = () => {
       <button onClick={handleClick}>Load Projects</button>
       <h2>Projects</h2>
 
-      <div className="filter" onClick={handlePhaseSelection}>
-        <button>All</button>
-        <button>Phase 5</button>
-        <button>Phase 4</button>
-        <button>Phase 3</button>
-        <button>Phase 2</button>
-        <button>Phase 1</button>
-      </div>
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={handleSearch}
-      />
-
-      <ul className="cards">{renderProjects(searchResults)}</ul>
+      <ul className="cards">{renderProjects()}</ul>
     </section>
   );
 };
