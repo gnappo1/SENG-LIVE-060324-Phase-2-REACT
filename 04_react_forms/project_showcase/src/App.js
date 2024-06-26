@@ -12,6 +12,7 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [searchQuery, setSearchQuery] = useState("")
   const [phaseSelected, setPhaseSelected] = useState("All");
+  const [projects, setProjects] = useState([]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value)
@@ -25,6 +26,17 @@ const App = () => {
     }
   }
 
+  const handleAddNewProject = (newProject) => {
+    setProjects(currentProjects => [newProject, ...currentProjects])
+  }
+
+  const loadProjects = () => {
+    fetch("http://localhost:4000/projects")
+      .then((res) => res.json())
+      .then((projects) => setProjects(projects))
+      .catch(err => console.log(err))
+  }
+
   //! LOCAL NON-STATE VARIABLES DO NOT CAUSE RE-RENDERS
   // let count = 0
 
@@ -33,10 +45,10 @@ const App = () => {
   return (
     <div className={isDarkMode ? "App" : "App light"}>
       <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-      <ProjectForm />
+      <ProjectForm handleAddNewProject={handleAddNewProject}/>
       <PhaseSelection handlePhaseSelection={handlePhaseSelection} />
       <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
-      <ProjectList searchQuery={searchQuery} phaseSelected={phaseSelected} />
+      <ProjectList searchQuery={searchQuery} phaseSelected={phaseSelected} loadProjects={loadProjects} projects={projects} />
     </div>
   );
 };

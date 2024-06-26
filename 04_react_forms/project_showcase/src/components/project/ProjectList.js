@@ -1,30 +1,21 @@
-import { useState } from 'react';
 import ProjectListItem from "./ProjectListItem";
 
-const ProjectList = ({ searchQuery, phaseSelected }) => {
-  const [projects, setProjects] = useState([]);
+const ProjectList = ({ searchQuery, phaseSelected, loadProjects, projects }) => {
 
   const handleClick = () => {
     loadProjects();
   };
 
-  const loadProjects = () => {
-    fetch("http://localhost:4000/projects")
-      .then((res) => res.json())
-      .then((projects) => setProjects(projects))
-      .catch(err => console.log(err))
-  }
-
   const filteredProjects = projects.filter(project => {
-    return phaseSelected === "All" || project.phase === phaseSelected
+    return (phaseSelected === "All" || project.phase === phaseSelected) && (searchQuery === "" || project.name.toLowerCase().includes(searchQuery.toLowerCase()) || project.about.toLowerCase().includes(searchQuery.toLowerCase()))
   })
 
-  const searchFiltered = filteredProjects.filter(project => {
-    return searchQuery === "" || project.name.toLowerCase().includes(searchQuery.toLowerCase()) || project.about.toLowerCase().includes(searchQuery.toLowerCase())
-  })
+  // const searchFiltered = filteredProjects.filter(project => {
+  //   return searchQuery === "" || project.name.toLowerCase().includes(searchQuery.toLowerCase()) || project.about.toLowerCase().includes(searchQuery.toLowerCase())
+  // })
 
   const renderProjects = () => {
-    return searchFiltered.map(project => (
+    return filteredProjects.map(project => (
       <ProjectListItem
         key={project.id}
         project={project}
