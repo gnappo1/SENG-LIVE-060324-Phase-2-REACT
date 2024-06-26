@@ -1,47 +1,58 @@
 import { useState } from "react"
+import { string, object } from 'yup';
+
+const projectSchema = object({
+  name: string().required("Name is required!"),
+  about: string().required(),
+  phase: string().required(),
+  link: string().required(),
+  image: string().required(),
+});
+
+const initialState = {
+  name: "",
+  about: "",
+  phase: "",
+  link: "",
+  image: "",
+}
 
 const ProjectForm = ({ handleAddNewProject }) => {
-  const [name, setName] = useState("")
-  const [about, setAbout] = useState("")
-  const [phase, setPhase] = useState("")
-  const [link, setLink] = useState("")
-  const [image, setImage] = useState("")
+  const [formData, setFormData] = useState(initialState)
+
+  const handleChange = ({target: {name, value}}) => {
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
 
   const handleSubmit = (e) => {
     //! No page refreshes
     e.preventDefault()
 
-    //! validate the data
-    const inputValues = [name, about, phase, link, image]
-    const validData = inputValues.every(value => value.trim() !== "")
-    if (!validData) {
-      alert("Please fill out all of the form fields")
-      return
-    }
+    //! validate the data with yup
 
-    //! Collect the data into an object
-    //! remember that when a key and a value have the same name, you can only type that name once
-    const newProject = { name, about, phase, link, image }
+    projectSchema.validate(formData)
+    .then(validatedData => {
 
-    // debugger
-    //! Pessimistically talk to the server and THEN update the page
-    fetch("http://localhost:4000/projects", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProject)
+      //! Pessimistically talk to the server and THEN update the page
+      fetch("http://localhost:4000/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validatedData)
+      })
+      .then(resp => resp.json())
+      .then(createdProject => handleAddNewProject(createdProject))
+      .catch(err => alert(err))
+  
+      //! Reset the form by resetting state to its initial value
+      setFormData(initialState)
     })
-    .then(resp => resp.json())
-    .then(createdProject => handleAddNewProject(createdProject))
-    .catch(err => alert(err))
+    .catch((errorObj) => console.log(`${errorObj.name}: ${errorObj.message}`))
 
-    //! Reset the form by resetting state to its initial value
-    setName("")
-    setAbout("")
-    setPhase("")
-    setLink("")
-    setImage("")
   }
 
   return (
@@ -51,13 +62,13 @@ const ProjectForm = ({ handleAddNewProject }) => {
         <h3>Add New Project</h3>
 
         <label htmlFor="name">Name</label>
-        <input type="text" id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} required/>
+        <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required/>
 
         <label htmlFor="about">About</label>
-        <textarea id="about" name="about" value={about} onChange={(e) => setAbout(e.target.value)}  required/>
+        <textarea id="about" name="about" value={formData.about} onChange={handleChange}  required/>
 
         <label htmlFor="phase">Phase</label>
-        <select name="phase" id="phase" value={phase} onChange={(e) => setPhase(e.target.value)} required>
+        <select name="phase" id="phase" value={formData.phase} onChange={handleChange} required>
           <option>Select One</option>
           <option value="1">Phase 1</option>
           <option value="2">Phase 2</option>
@@ -67,10 +78,10 @@ const ProjectForm = ({ handleAddNewProject }) => {
         </select>
 
         <label htmlFor="link">Project Homepage</label>
-        <input type="text" id="link" name="link" value={link} onChange={(e) => setLink(e.target.value)}  required/>
+        <input type="text" id="link" name="link" value={formData.link} onChange={handleChange}  required/>
 
         <label htmlFor="image">Screenshot</label>
-        <input type="text" id="image" name="image" value={image} onChange={(e) => setImage(e.target.value)}  required/>
+        <input type="text" id="image" name="image" value={formData.image} onChange={handleChange}  required/>
 
         <input type="submit" value="Add Project" />
       </form>
