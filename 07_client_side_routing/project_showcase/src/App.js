@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react"
 import Header from "./components/navigation/Header";
-import ProjectForm from "./components/project/ProjectForm";
-import ProjectList from "./components/project/ProjectList";
-import SearchBar from "./components/search/SearchBar";
-import ButtonsFilter from "./components/search/ButtonsFilter";
+import { Outlet } from "react-router-dom";
+
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -56,11 +54,7 @@ const App = () => {
   return (
     <div className={isDarkMode ? "App" : "App light"}>
       <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-      <ProjectForm handleAddProject={handleAddProject} />
-      <ButtonsFilter handlePhaseSelection={handlePhaseSelection}/>
-      <SearchBar handleSearch={handleSearch} searchQuery={searchQuery} />
-      <ProjectList handlePatchProject={handlePatchProject} handleDelete={handleDelete} projects={projects} searchQuery={searchQuery} phaseSelected={phaseSelected}  />
-
+      <Outlet context={{ handlePhaseSelection, handleSearch, searchQuery, handlePatchProject, handleDelete, projects, phaseSelected, handleAddProject }}/>
     </div>
   );
 };

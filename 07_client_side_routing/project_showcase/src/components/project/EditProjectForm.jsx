@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { object, string } from "yup";
 import { fetchPatchProject } from "../apis/project/projectApi";
+import { useNavigate } from "react-router-dom";
 
 const url = "http://localhost:4000/projects";
 
@@ -31,6 +32,7 @@ const EditProjectForm = ({
   };
   const [formData, setFormData] = useState(initialState);
   const [error, setError] = useState("");
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({
@@ -56,7 +58,8 @@ const EditProjectForm = ({
           validFormData,
           handlePatchProject,
           toggleEditMode,
-          handleError
+          handleError,
+          navigate
         );
       })
       .catch((validationError) => setError(validationError.message));

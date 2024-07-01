@@ -2,6 +2,7 @@ import { useState } from "react";
 import { object, string } from 'yup';
 import { v4 as uuidv4 } from "uuid"
 import { fetchPostProject } from "../apis/project/projectApi";
+import { useOutletContext, useNavigate } from "react-router-dom";
 
 const initialState = {
   name: "",
@@ -21,9 +22,11 @@ const projectSchema = object().shape({
   image: string().required('Image is required!')
 })
 
-const ProjectForm = ({ handleAddProject, removeLastProject }) => {
+const ProjectForm = () => {
   const [formData, setFormData] = useState(initialState);
   const [error, setError] = useState("");
+  const { handleAddProject } = useOutletContext()
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({
@@ -54,7 +57,7 @@ const ProjectForm = ({ handleAddProject, removeLastProject }) => {
         const finalizedData = { ...validFormData, id: uuidv4().slice(0, 4) }
         handleAddProject(finalizedData)
         //! We need to talk to the server
-        fetchPostProject(url, finalizedData, handleFormData, initialState, handleError, removeLastProject)
+        fetchPostProject(url, finalizedData, handleFormData, initialState, handleError, navigate)
       })
       .catch(validationError => setError(validationError.message))
     //! Optimistic rendering
